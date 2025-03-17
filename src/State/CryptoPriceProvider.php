@@ -28,4 +28,5 @@ readonly class CryptoPriceProvider implements ProviderInterface
             return [];
         }
     }
+
 }

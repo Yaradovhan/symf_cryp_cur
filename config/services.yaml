@@ -30,7 +30,7 @@ services:
         autowire: true
         arguments:
             - 'https://api.binance.com/api/v3/klines'
-            - ['BTC']
+            - ['BTC','ETH','TRUMP']
             - 'USDT'
             - '1h'
             - '200'

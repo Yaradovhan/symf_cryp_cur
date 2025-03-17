@@ -25,12 +25,10 @@ readonly class StockExchangeConfig
         return $this->symbols;
     }
 
-
     public function getPairCode(): string
     {
         return $this->pairCode;
     }
-
 
     public function getInterval(): string
     {

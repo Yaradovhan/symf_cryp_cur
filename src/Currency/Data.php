@@ -10,6 +10,7 @@ use Throwable;
 class Data
 {
     public const BASE_CURRENCY_CODE = 'usd';
+
     public function __construct(
         private readonly string              $apiLatestUsdRateUrl,
         private readonly array               $enabledCurrencies,

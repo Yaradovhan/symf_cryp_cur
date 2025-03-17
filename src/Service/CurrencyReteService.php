@@ -13,7 +13,6 @@ use Throwable;
 readonly class CurrencyReteService
 {
     public function __construct(
-
         private DocumentManager                $dm,
         private ExchangeCurrencyRateRepository $exchangeCurrencyRateRepository,
         private Data                           $currencyData
@@ -43,7 +42,9 @@ readonly class CurrencyReteService
                 $this->dm->persist($row);
             }
         }
+
         $this->dm->flush();
         $this->dm->clear();
     }
+
 }
