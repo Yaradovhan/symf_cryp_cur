@@ -10,7 +10,6 @@ use Throwable;
 
 class BaseDocumentRepository extends ServiceDocumentRepository
 {
-    private ManagerRegistry $managerRegistry;
     protected DocumentManager $documentManager;
 
     public function __construct(ManagerRegistry $managerRegistry, DocumentManager $documentManager)

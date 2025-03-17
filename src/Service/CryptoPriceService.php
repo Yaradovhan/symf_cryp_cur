@@ -8,7 +8,9 @@ use App\Exchanges\StockExchangeConfig;
 use App\Factory\CryptoPriceFactory;
 use App\Repository\CryptoPriceRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\MongoDBException;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
+use Throwable;
 
 readonly class CryptoPriceService
 {
@@ -31,13 +33,20 @@ readonly class CryptoPriceService
 
         foreach ($symbols as $symbol) {
             $queryConfig = ['query' => ['symbol' => $symbol . $pairCode, 'interval'=> $interval, 'limit' => $limit]];
-            $response = $this->httpClient->request(HttpOperation::METHOD_GET, $this->stockExchangeConfig->getKlinesUrl(), $queryConfig);
-            $result[$symbol] = $response->toArray();
+            try {
+                $response = $this->httpClient->request(HttpOperation::METHOD_GET, $this->stockExchangeConfig->getKlinesUrl(), $queryConfig);
+                $result[$symbol] = $response->toArray();
+            } catch (Throwable $e) {
+            }
         }
 
         return $result;
     }
 
+    /**
+     * @throws Throwable
+     * @throws MongoDBException
+     */
     public function savePrices(array $data): void
     {
         $countForUpdate = 0;

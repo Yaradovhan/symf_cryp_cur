@@ -15,7 +15,7 @@ readonly class StockExchangeConfig
     ) {
     }
 
-    public function getKlinesUrl()
+    public function getKlinesUrl(): string
     {
         return $this->apiKlinesUrl;
     }

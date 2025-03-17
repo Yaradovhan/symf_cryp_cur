@@ -5,6 +5,7 @@ namespace App\Currency;
 
 use ApiPlatform\Metadata\HttpOperation;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
+use Throwable;
 
 class Data
 {
@@ -17,8 +18,13 @@ class Data
 
     public function getLatestRate($currency = self::BASE_CURRENCY_CODE): array
     {
-        $rate = $this->httpClient->request(HttpOperation::METHOD_GET, $this->prepareUpdateRateUrl($currency));
-        return $rate->toArray();
+        try {
+            $rate = $this->httpClient->request(HttpOperation::METHOD_GET, $this->prepareUpdateRateUrl($currency));
+            return $rate->toArray();
+
+        } catch (Throwable $e) {
+            return [];
+        }
     }
 
     private function prepareUpdateRateUrl(string $currency): string
@@ -26,7 +32,7 @@ class Data
         return str_replace('%1', strtolower($currency), $this->apiLatestUsdRateUrl);
     }
 
-    public function getEnabledCurrencies()
+    public function getEnabledCurrencies(): array
     {
         return $this->enabledCurrencies;
     }
