@@ -51,7 +51,7 @@ readonly class CryptoPriceService
                     $countForUpdate++;
                     $cryptoPrice = $this->cryptoPriceFactory->create(
                         $symbol,
-                        $value[$this->stockExchangeConfig->getMapping()['close_price']],
+                        floatval($value[$this->stockExchangeConfig->getMapping()['close_price']]),
                         $timestamp
                     );
                     $this->dm->persist($cryptoPrice);
