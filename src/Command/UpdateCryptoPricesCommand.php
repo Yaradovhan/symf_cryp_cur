@@ -11,7 +11,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Scheduler\Attribute\AsPeriodicTask;
 
 #[AsCommand(name: 'crypto:update-prices')]
-#[AsPeriodicTask('every hour', schedule: 'default')]
+#[AsPeriodicTask(frequency: '1 hour', schedule: 'default')]
 class UpdateCryptoPricesCommand extends Command
 {
     private CryptoPriceService $cryptoPriceService;
