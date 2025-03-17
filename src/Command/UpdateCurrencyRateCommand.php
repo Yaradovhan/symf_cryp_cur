@@ -9,6 +9,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Scheduler\Attribute\AsPeriodicTask;
+use Throwable;
 
 #[AsCommand(
     name: 'app:update-currency-rate',
@@ -32,7 +33,7 @@ class UpdateCurrencyRateCommand extends Command
             $output->writeln('Currencies fetched and saved');
 
             return Command::SUCCESS;
-        } catch (\Throwable $ex) {
+        } catch (Throwable $ex) {
             $output->writeln($ex->getMessage());
             //todo write to logfile
             return Command::FAILURE;

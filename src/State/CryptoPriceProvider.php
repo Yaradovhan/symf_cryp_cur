@@ -6,12 +6,14 @@ namespace App\State;
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProviderInterface;
 use App\Repository\CryptoPriceRepository;
+use Throwable;
 
 readonly class CryptoPriceProvider implements ProviderInterface
 {
     public function __construct(
         private CryptoPriceRepository $repository,
     ) {}
+
     public function provide(Operation $operation, array $uriVariables = [], array $context = []): array
     {
         try {
@@ -22,7 +24,7 @@ readonly class CryptoPriceProvider implements ProviderInterface
             $offset = ($page - 1) * $itemsPerPage;
 
             return $this->repository->getCollectionBySymbol($symbol, $itemsPerPage, $offset, $currency);
-        } catch (\Throwable $exception) {
+        } catch (Throwable $e) {
             return [];
         }
     }

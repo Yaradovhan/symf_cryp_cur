@@ -11,13 +11,13 @@ class CryptoPriceRepository extends BaseDocumentRepository
 {
     private ExchangeCurrencyRateRepository $exchangeCurrencyRateRepository;
 
+    protected $documentName = CryptoPrice::class;
+
     public function __construct(ManagerRegistry $managerRegistry, DocumentManager $documentManager, \App\Repository\ExchangeCurrencyRateRepository $exchangeCurrencyRateRepository)
     {
         parent::__construct($managerRegistry, $documentManager);
         $this->exchangeCurrencyRateRepository = $exchangeCurrencyRateRepository;
     }
-
-    protected $documentName = CryptoPrice::class;
 
     public function getCollectionBySymbol($symbol, $itemsPerPage, $offset, $currency): ?array
     {
@@ -32,7 +32,7 @@ class CryptoPriceRepository extends BaseDocumentRepository
         return $collection;
     }
 
-    private function cropFloat(string $number, $decimals = 2)
+    private function cropFloat(string $number, $decimals = 2): float
     {
         return floatval(bcdiv($number, '1', $decimals));
     }
