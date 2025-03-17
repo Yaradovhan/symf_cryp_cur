@@ -73,4 +73,5 @@ readonly class CryptoPriceService
             $this->dm->clear();
         }
     }
+
 }

@@ -57,4 +57,5 @@ class ExchangeCurrencyRate implements ExchangeCurrencyRateInterface
         $this->rate = $rate;
         return $this;
     }
+
 }

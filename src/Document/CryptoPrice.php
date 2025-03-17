@@ -45,7 +45,6 @@ class CryptoPrice implements CryptoPriceInterface
     private $price;
 
     #[Groups(['crypto_price:item', 'crypto_price:list'])]
-
     #[ODM\Field(type: 'date')]
     /**
      * @var null|\DateTime
@@ -56,6 +55,7 @@ class CryptoPrice implements CryptoPriceInterface
     {
         return $this->id;
     }
+
     public function setId(?string $id): CryptoPriceInterface
     {
         $this->id = $id;
@@ -94,4 +94,5 @@ class CryptoPrice implements CryptoPriceInterface
         $this->time = $time;
         return $this;
     }
+
 }

@@ -28,4 +28,5 @@ class CryptoPriceFactory
 
         return $cryptoPrice;
     }
+
 }

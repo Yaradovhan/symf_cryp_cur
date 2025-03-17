@@ -14,7 +14,6 @@ class BaseDocumentRepository extends ServiceDocumentRepository
 
     public function __construct(ManagerRegistry $managerRegistry, DocumentManager $documentManager)
     {
-
         parent::__construct($managerRegistry, $this->documentName);
         $this->documentManager = $documentManager;
     }
@@ -23,9 +22,11 @@ class BaseDocumentRepository extends ServiceDocumentRepository
     {
         try{
             $qB = $this->getDocumentManager()->createQueryBuilder($this->documentName);
+
             foreach ($fields as $field => $value) {
                 $qB->field($field)->equals($value);
             }
+
             $document = $qB->getQuery()->execute()->current();
         } catch (Throwable $e) {
             $document = null;
@@ -33,4 +34,5 @@ class BaseDocumentRepository extends ServiceDocumentRepository
 
         return is_object($document) ? $document : null;
     }
+
 }

@@ -13,4 +13,5 @@ class ExchangeCurrencyRateRepository extends BaseDocumentRepository
     {
         return $this->findOneBy(['currency' => $currency]);
     }
+
 }
