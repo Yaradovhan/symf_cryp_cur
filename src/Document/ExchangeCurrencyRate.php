@@ -21,10 +21,18 @@ class ExchangeCurrencyRate implements ExchangeCurrencyRateInterface
     #[ODM\Field(type: 'float')]
     private float $rate;
 
-    public function getId()
+    public function getId(): string
     {
         return $this->id;
     }
+
+    public function setId(?string $id): ExchangeCurrencyRateInterface
+    {
+        $this->id = $id;
+
+        return $this;
+    }
+
     public function getBaseCurrency(): string
     {
         return $this->baseCurrency;
@@ -33,7 +41,9 @@ class ExchangeCurrencyRate implements ExchangeCurrencyRateInterface
     public function setBaseCurrency(string $baseCurrency): ExchangeCurrencyRateInterface
     {
         $this->baseCurrency = $baseCurrency;
+
         return $this;
+
     }
 
     public function getCurrency(): string
@@ -44,6 +54,7 @@ class ExchangeCurrencyRate implements ExchangeCurrencyRateInterface
     public function setCurrency(string $currency): ExchangeCurrencyRateInterface
     {
         $this->currency = $currency;
+
         return $this;
     }
 
@@ -55,7 +66,7 @@ class ExchangeCurrencyRate implements ExchangeCurrencyRateInterface
     public function setRate(float $rate): ExchangeCurrencyRateInterface
     {
         $this->rate = $rate;
+
         return $this;
     }
-
 }

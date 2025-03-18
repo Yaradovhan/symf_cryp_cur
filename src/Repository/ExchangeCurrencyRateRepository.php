@@ -4,8 +4,9 @@ declare(strict_types=1);
 namespace App\Repository;
 
 use App\Document\ExchangeCurrencyRate;
+use App\Repository\Interface\ExchangeCurrencyRateRepositoryInterface;
 
-class ExchangeCurrencyRateRepository extends BaseDocumentRepository
+class ExchangeCurrencyRateRepository extends BaseDocumentRepository implements ExchangeCurrencyRateRepositoryInterface
 {
     protected $documentName = ExchangeCurrencyRate::class;
 
@@ -13,5 +14,4 @@ class ExchangeCurrencyRateRepository extends BaseDocumentRepository
     {
         return $this->findOneBy(['currency' => $currency]);
     }
-
 }

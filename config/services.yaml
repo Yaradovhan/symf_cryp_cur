@@ -25,6 +25,21 @@ services:
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
 
+    Psr\Log\LoggerInterface:
+        public: true
+
+    Symfony\Contracts\HttpClient\HttpClientInterface:
+        public: true
+
+    App\Document\CryptoPrice:
+        public: true
+
+    Doctrine\ODM\MongoDB\DocumentManager:
+        public: true
+
+    App\Repository\CryptoPriceRepository:
+        public: true
+
     App\Exchanges\StockExchangeConfig:
         public: true
         autowire: true
@@ -40,13 +55,15 @@ services:
         autowire: true
         arguments:
             - 'https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/%1.json'
+            - '@Symfony\Contracts\HttpClient\HttpClientInterface'
+            - '@Psr\Log\LoggerInterface'
             - ['usd', 'eur', 'czk', 'uah']
 
     App\Factory\CryptoPriceFactory:
         public: true
         autowire: true
         arguments:
-            - 'App\Document\CryptoPrice'
+            - '@App\Document\CryptoPrice'
 
     App\Service\CryptoPriceService:
         public: true

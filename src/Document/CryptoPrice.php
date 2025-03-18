@@ -8,6 +8,7 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use App\Document\CryptoPrice\CryptoPriceInterface;
 use App\State\CryptoPriceProvider;
+use DateTime;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Symfony\Component\Serializer\Attribute\Groups;
 
@@ -27,7 +28,7 @@ use Symfony\Component\Serializer\Attribute\Groups;
             name: 'crypto_price_data',
             provider: CryptoPriceProvider::class
         )
-    ],
+    ]
 )]
 #[ODM\Document(collection: "crypto_price", repositoryClass: 'App\Repository\CryptoPriceRepository')]
 class CryptoPrice implements CryptoPriceInterface
@@ -38,20 +39,20 @@ class CryptoPrice implements CryptoPriceInterface
 
     #[Groups(['crypto_price:item', 'crypto_price:list'])]
     #[ODM\Field(type: 'string')]
-    private $symbol;
+    private string $symbol;
 
     #[Groups(['crypto_price:item', 'crypto_price:list'])]
     #[ODM\Field(type: 'float')]
-    private $price;
+    private float $price;
 
     #[Groups(['crypto_price:item', 'crypto_price:list'])]
     #[ODM\Field(type: 'date')]
     /**
-     * @var null|\DateTime
+     * @var null|DateTime
      */
-    private $time;
+    private ?DateTime $time;
 
-    public function getId()
+    public function getId(): ?string
     {
         return $this->id;
     }
@@ -59,6 +60,7 @@ class CryptoPrice implements CryptoPriceInterface
     public function setId(?string $id): CryptoPriceInterface
     {
         $this->id = $id;
+
         return $this;
     }
 
@@ -70,6 +72,7 @@ class CryptoPrice implements CryptoPriceInterface
     public function setSymbol(string $symbol): CryptoPriceInterface
     {
         $this->symbol = $symbol;
+
         return $this;
     }
 
@@ -81,18 +84,19 @@ class CryptoPrice implements CryptoPriceInterface
     public function setPrice(float $price): CryptoPriceInterface
     {
         $this->price = $price;
+
         return $this;
     }
 
-    public function getTime(): \DateTime
+    public function getTime(): DateTime
     {
         return $this->time;
     }
 
-    public function setTime(\DateTime $time): CryptoPriceInterface
+    public function setTime(DateTime $time): CryptoPriceInterface
     {
         $this->time = $time;
+
         return $this;
     }
-
 }

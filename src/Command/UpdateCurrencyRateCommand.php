@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Command;
 
 use App\Service\CurrencyReteService;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -20,22 +21,27 @@ class UpdateCurrencyRateCommand extends Command
 {
     private CurrencyReteService $currencyReteService;
 
-    public function __construct(CurrencyReteService $currencyReteService)
-    {
+    public function __construct(
+        CurrencyReteService $currencyReteService,
+        private readonly LoggerInterface $logger
+    ) {
         parent::__construct();
         $this->currencyReteService = $currencyReteService;
     }
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         try {
-            $currencies = $this->currencyReteService->fetchCurrencies();
+            $output->writeln('Currencies fetch start');
+            $currencies = $this->currencyReteService->fetchLastCurrenciesRate();
+            $output->writeln('Currencies save start');
             $this->currencyReteService->saveCurrencies($currencies);
             $output->writeln('Currencies fetched and saved');
 
             return Command::SUCCESS;
         } catch (Throwable $ex) {
             $output->writeln($ex->getMessage());
-            //todo write to logfile
+            $this->logger->error($ex->getMessage());
+
             return Command::FAILURE;
         }
     }
