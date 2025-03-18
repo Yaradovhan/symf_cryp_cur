@@ -14,17 +14,21 @@ use Doctrine\ODM\MongoDB\MongoDBException;
 use Psr\Log\LoggerInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Throwable;
+
 use function floatval;
 
 readonly class CryptoPriceService implements CryptoPriceServiceInterface
 {
+    private const BINANCE_TIME_KEY = 0;
+    private const BINANCE_CLOSE_PRICE_KEY = 4;
+
     public function __construct(
         private HttpClientInterface   $httpClient,
         private DocumentManager       $dm,
         private StockExchangeConfig   $stockExchangeConfig,
         private CryptoPriceRepository $cryptoPriceRepository,
         private CryptoPriceFactory    $cryptoPriceFactory,
-        private LoggerInterface $logger
+        private LoggerInterface       $logger
     ) {}
 
     public function fetchSymbolPrices(): array
@@ -40,7 +44,11 @@ readonly class CryptoPriceService implements CryptoPriceServiceInterface
             $queryConfig = ['query' => ['symbol' => $symbol . $pairCode] + $defaultParams];
 
             try {
-                $response = $this->httpClient->request(HttpOperation::METHOD_GET, $this->stockExchangeConfig->getKlinesUrl(), $queryConfig);
+                $response = $this->httpClient->request(
+                    HttpOperation::METHOD_GET,
+                    $this->stockExchangeConfig->getKlinesUrl(),
+                    $queryConfig
+                );
                 $result[$symbol] = $response->toArray();
             } catch (Throwable $e) {
                 $this->logger->error($e->getMessage());
@@ -57,11 +65,12 @@ readonly class CryptoPriceService implements CryptoPriceServiceInterface
     public function savePrices(array $data): void
     {
         $countForUpdate = 0;
-        $timeKey = $this->stockExchangeConfig->getMapping()['time'] ?? 0;
-        $priceKey = $this->stockExchangeConfig->getMapping()['close_price'] ?? 4;
+        $mapping = $this->stockExchangeConfig->getMapping();
+        $timeKey = $mapping['time'] ?? self::BINANCE_TIME_KEY;
+        $priceKey = $mapping['close_price'] ?? self::BINANCE_CLOSE_PRICE_KEY;
 
         foreach ($data as $symbol => $entry) {
-            foreach ($entry as $key => $value) {
+            foreach ($entry as $value) {
                 $timestamp = (new DateTime())->setTimestamp($value[$timeKey] / 1000);
                 $existingPrice = $this->cryptoPriceRepository->findOneBy(['symbol' => $symbol, 'time' => $timestamp]);
 

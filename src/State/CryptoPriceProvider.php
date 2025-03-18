@@ -13,7 +13,7 @@ readonly class CryptoPriceProvider implements ProviderInterface
 {
     public function __construct(
         private CryptoPriceRepository $repository,
-        private LoggerInterface $logger
+        private LoggerInterface       $logger
     ) {}
 
     /**
@@ -25,7 +25,9 @@ readonly class CryptoPriceProvider implements ProviderInterface
             $symbol = $uriVariables['symbol'];
             $currency = $uriVariables['currency'];
             $page = $context['filters']['page'] ?? 1;
-            $itemsPerPage = isset($context['filters']['itemsPerPage']) ? (int)$context['filters']['itemsPerPage'] : $operation->getPaginationItemsPerPage();
+            $itemsPerPage = isset($context['filters']['itemsPerPage'])
+                ? (int)$context['filters']['itemsPerPage']
+                : $operation->getPaginationItemsPerPage();
             $offset = ($page - 1) * $itemsPerPage;
 
             return $this->repository->getCollectionResultArrayBySymbol($symbol, $itemsPerPage, $offset, $currency);

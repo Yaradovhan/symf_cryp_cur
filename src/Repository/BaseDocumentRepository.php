@@ -8,11 +8,8 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 
 class BaseDocumentRepository extends ServiceDocumentRepository
 {
-    protected DocumentManager $documentManager;
-
-    public function __construct(ManagerRegistry $managerRegistry, DocumentManager $documentManager)
+    public function __construct(ManagerRegistry $managerRegistry, protected readonly DocumentManager $documentManager)
     {
         parent::__construct($managerRegistry, $this->documentName);
-        $this->documentManager = $documentManager;
     }
 }

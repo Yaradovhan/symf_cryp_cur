@@ -12,11 +12,13 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Scheduler\Attribute\AsPeriodicTask;
 use Throwable;
 
+use function implode;
+use function array_keys;
+
 #[AsCommand(name: 'crypto:update-prices')]
 #[AsPeriodicTask(frequency: '1 hour', schedule: 'default')]
 class UpdateCryptoPricesCommand extends Command
 {
-
     public function __construct(
         private readonly CryptoPriceService $cryptoPriceService,
         private readonly LoggerInterface $logger
@@ -32,7 +34,7 @@ class UpdateCryptoPricesCommand extends Command
             $output->writeln('Crypto prices save start');
             $this->cryptoPriceService->savePrices($data);
             $output->writeln('Crypto prices fetched and saved');
-            $this->logger->info('Crypto prices '. implode(', ',array_keys($data)) . ' saved');
+            $this->logger->info('Crypto prices ' . implode(', ', array_keys($data)) . ' saved');
 
             return Command::SUCCESS;
         } catch (Throwable $ex) {

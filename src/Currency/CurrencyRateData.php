@@ -9,12 +9,14 @@ use App\Document\ExchangeCurrencyRate\ExchangeCurrencyRateInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Throwable;
+
 use function str_replace;
 use function strtolower;
+use function strval;
 use function floatval;
 use function bcdiv;
 
-readonly class Data
+readonly class CurrencyRateData
 {
     public function __construct(
         private string              $apiLatestUsdRateUrl,
@@ -27,7 +29,7 @@ readonly class Data
     /**
      * @param string $method GET/POST
      *
-     * @return array
+     * @return mixed[][]
      *
      * Fetches the latest exchange rate for the base currency.
      */

@@ -3,13 +3,14 @@ declare(strict_types=1);
 
 namespace App\Repository;
 
-use App\Currency\Data;
+use App\Currency\CurrencyRateData;
 use App\Document\CryptoPrice;
 use App\Document\CryptoPrice\CryptoPriceInterface;
-use App\Document\ExchangeCurrencyRate\ExchangeCurrencyRateInterface;
 use App\Repository\Interface\CryptoPriceRepositoryInterface;
 use Doctrine\Bundle\MongoDBBundle\ManagerRegistry;
 use Doctrine\ODM\MongoDB\DocumentManager;
+
+use function strtoupper;
 
 class CryptoPriceRepository extends BaseDocumentRepository implements CryptoPriceRepositoryInterface
 {
@@ -19,25 +20,30 @@ class CryptoPriceRepository extends BaseDocumentRepository implements CryptoPric
         ManagerRegistry                                 $managerRegistry,
         DocumentManager                                 $documentManager,
         private readonly ExchangeCurrencyRateRepository $exchangeCurrencyRateRepository,
-        private readonly Data                           $currencyData
+        private readonly CurrencyRateData               $currencyData
     ) {
         parent::__construct($managerRegistry, $documentManager);
     }
 
     /**
-     * @return CryptoPriceInterface[]
+     * @inheritDoc
      */
-    public function getCollectionResultArrayBySymbol(string $symbol, int $itemsPerPage, int $offset, string $currency = ''): array
-    {
+    public function getCollectionResultArrayBySymbol(
+        string $symbol,
+        int $itemsPerPage,
+        int $offset,
+        string $currency = ''
+    ): array {
         $collectionArray = $this->findBy(['symbol' => strtoupper($symbol)], ['time' => 'DESC'], $itemsPerPage, $offset);
 
         if ($collectionArray) {
-            /** @var ExchangeCurrencyRateInterface $rateData */
             $rateData = $this->exchangeCurrencyRateRepository->getExchangeRateByCurrency($currency);
 
-            /** @var CryptoPriceInterface $item */
-            foreach ($collectionArray as $item) {
-                $this->currencyData->preparePrice($item, $rateData);
+            if ($rateData) {
+                /** @var CryptoPriceInterface $item */
+                foreach ($collectionArray as $item) {
+                    $this->currencyData->preparePrice($item, $rateData);
+                }
             }
         }
 
