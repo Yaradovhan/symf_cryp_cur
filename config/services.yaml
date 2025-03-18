@@ -25,21 +25,6 @@ services:
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
 
-    Psr\Log\LoggerInterface:
-        public: true
-
-    Symfony\Contracts\HttpClient\HttpClientInterface:
-        public: true
-
-    App\Document\CryptoPrice:
-        public: true
-
-    Doctrine\ODM\MongoDB\DocumentManager:
-        public: true
-
-    App\Repository\CryptoPriceRepository:
-        public: true
-
     App\Exchanges\StockExchangeConfig:
         public: true
         autowire: true
