@@ -19,15 +19,13 @@ use Throwable;
 #[AsPeriodicTask(frequency: '1 day', schedule: 'default')]
 class UpdateCurrencyRateCommand extends Command
 {
-    private CurrencyReteService $currencyReteService;
-
     public function __construct(
-        CurrencyReteService $currencyReteService,
+        private readonly CurrencyReteService $currencyReteService,
         private readonly LoggerInterface $logger
     ) {
         parent::__construct();
-        $this->currencyReteService = $currencyReteService;
     }
+
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         try {

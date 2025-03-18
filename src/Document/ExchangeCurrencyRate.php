@@ -43,7 +43,6 @@ class ExchangeCurrencyRate implements ExchangeCurrencyRateInterface
         $this->baseCurrency = $baseCurrency;
 
         return $this;
-
     }
 
     public function getCurrency(): string

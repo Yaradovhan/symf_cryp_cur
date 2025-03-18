@@ -29,5 +29,4 @@ interface CryptoPriceInterface
     public function getTime(): DateTime;
 
     public function setTime(DateTime $time): CryptoPriceInterface;
-
 }
