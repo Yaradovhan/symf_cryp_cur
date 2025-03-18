@@ -6,9 +6,14 @@ namespace App\Currency;
 use ApiPlatform\Metadata\HttpOperation;
 use App\Document\CryptoPrice\CryptoPriceInterface;
 use App\Document\ExchangeCurrencyRate\ExchangeCurrencyRateInterface;
-use Psr\Log\LoggerInterface;
+use Exception;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
-use Throwable;
 
 use function str_replace;
 use function strtolower;
@@ -21,28 +26,32 @@ readonly class CurrencyRateData
     public function __construct(
         private string              $apiLatestUsdRateUrl,
         private HttpClientInterface $httpClient,
-        private LoggerInterface     $logger,
         private array               $enabledCurrencies = [],
         private string              $baseCurrency = 'usd'
     ) {}
 
     /**
+     * Fetches the latest exchange rate for the base currency.
+     *
      * @param string $method GET/POST
      *
      * @return mixed[][]
      *
-     * Fetches the latest exchange rate for the base currency.
+     * @throws ClientExceptionInterface
+     * @throws DecodingExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
+     * @throws Exception
      */
     public function getLatestRate(string $method = HttpOperation::METHOD_GET): array
     {
-        try {
-            $rate = $this->httpClient->request($method, $this->prepareUpdateRateUrl($this->baseCurrency));
+        $response = $this->httpClient->request($method, $this->prepareUpdateRateUrl($this->baseCurrency));
 
-            return $rate->toArray();
-        } catch (Throwable $e) {
-            $this->logger->error($e);
-
-            return [];
+        if ($response->getStatusCode() == Response::HTTP_OK) {
+            return $response->toArray();
+        } else {
+            throw new Exception('Bad API response, status code: ' . $response->getStatusCode());
         }
     }
 
