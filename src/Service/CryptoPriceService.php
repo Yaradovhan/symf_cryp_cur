@@ -11,7 +11,13 @@ use App\Service\Interface\CryptoPriceServiceInterface;
 use DateTime;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\MongoDBException;
-use Psr\Log\LoggerInterface;
+use Exception;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Throwable;
 
@@ -27,10 +33,18 @@ readonly class CryptoPriceService implements CryptoPriceServiceInterface
         private DocumentManager       $dm,
         private StockExchangeConfig   $stockExchangeConfig,
         private CryptoPriceRepository $cryptoPriceRepository,
-        private CryptoPriceFactory    $cryptoPriceFactory,
-        private LoggerInterface       $logger
+        private CryptoPriceFactory    $cryptoPriceFactory
     ) {}
 
+    /**
+     * @return array
+     * @throws ClientExceptionInterface
+     * @throws DecodingExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
+     * @throws Exception
+     */
     public function fetchSymbolPrices(): array
     {
         $symbols = $this->stockExchangeConfig->getSymbols();
@@ -42,16 +56,16 @@ readonly class CryptoPriceService implements CryptoPriceServiceInterface
 
         foreach ($symbols as $symbol) {
             $queryConfig = ['query' => ['symbol' => $symbol . $pairCode] + $defaultParams];
+            $response = $this->httpClient->request(
+                HttpOperation::METHOD_GET,
+                $this->stockExchangeConfig->getKlinesUrl(),
+                $queryConfig
+            );
 
-            try {
-                $response = $this->httpClient->request(
-                    HttpOperation::METHOD_GET,
-                    $this->stockExchangeConfig->getKlinesUrl(),
-                    $queryConfig
-                );
+            if ($response->getStatusCode() == Response::HTTP_OK) {
                 $result[$symbol] = $response->toArray();
-            } catch (Throwable $e) {
-                $this->logger->error($e->getMessage());
+            } else {
+                throw new Exception('Bad API response, status code: ' . $response->getStatusCode());
             }
         }
 
