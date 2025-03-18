@@ -9,7 +9,6 @@ This is the test job
 - you can get data about pair crypto coin / currency (ex. BTC/USD, BTC/EUR)
 - you can use API to get collection with crypto coin / currency
 
-
 # API
 
 link to get collection data
@@ -19,6 +18,10 @@ link to get collection data
 you can use variable for pagination
 
 `{domain}/api/crypto-price/pair-data/{symbol}/{currency}?page=2&itemsPerPage=20`
+
+# Configuration
+
+### All configs about coins, limit, interval etc. setted in file services.yaml
 
 # Command and scheduled tasks
 

@@ -40,13 +40,15 @@ services:
         autowire: true
         arguments:
             - 'https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/%1.json'
+            - '@Symfony\Contracts\HttpClient\HttpClientInterface'
+            - '@Psr\Log\LoggerInterface'
             - ['usd', 'eur', 'czk', 'uah']
 
     App\Factory\CryptoPriceFactory:
         public: true
         autowire: true
         arguments:
-            - 'App\Document\CryptoPrice'
+            - '@App\Document\CryptoPrice'
 
     App\Service\CryptoPriceService:
         public: true

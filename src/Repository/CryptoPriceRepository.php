@@ -3,38 +3,44 @@ declare(strict_types=1);
 
 namespace App\Repository;
 
+use App\Currency\Data;
 use App\Document\CryptoPrice;
+use App\Document\CryptoPrice\CryptoPriceInterface;
+use App\Document\ExchangeCurrencyRate\ExchangeCurrencyRateInterface;
+use App\Repository\Interface\CryptoPriceRepositoryInterface;
 use Doctrine\Bundle\MongoDBBundle\ManagerRegistry;
 use Doctrine\ODM\MongoDB\DocumentManager;
 
-class CryptoPriceRepository extends BaseDocumentRepository
+class CryptoPriceRepository extends BaseDocumentRepository implements CryptoPriceRepositoryInterface
 {
-    private ExchangeCurrencyRateRepository $exchangeCurrencyRateRepository;
-
     protected $documentName = CryptoPrice::class;
 
-    public function __construct(ManagerRegistry $managerRegistry, DocumentManager $documentManager, \App\Repository\ExchangeCurrencyRateRepository $exchangeCurrencyRateRepository)
-    {
+    public function __construct(
+        ManagerRegistry                                 $managerRegistry,
+        DocumentManager                                 $documentManager,
+        private readonly ExchangeCurrencyRateRepository $exchangeCurrencyRateRepository,
+        private readonly Data                           $currencyData
+    ) {
         parent::__construct($managerRegistry, $documentManager);
-        $this->exchangeCurrencyRateRepository = $exchangeCurrencyRateRepository;
     }
 
-    public function getCollectionBySymbol($symbol, $itemsPerPage, $offset, $currency): ?array
+    /**
+     * @return CryptoPriceInterface[]
+     */
+    public function getCollectionResultArrayBySymbol(string $symbol, int $itemsPerPage, int $offset, string $currency = ''): array
     {
-        $collection = $this->findBy(['symbol' => strtoupper($symbol)], ['time' => 'DESC'], $itemsPerPage, $offset);
-        $rateData = $this->exchangeCurrencyRateRepository->getExchangeRateByCurrency($currency);
+        $collectionArray = $this->findBy(['symbol' => strtoupper($symbol)], ['time' => 'DESC'], $itemsPerPage, $offset);
 
-        foreach ($collection as $item) {
-            $price = $item->getPrice() * $rateData->getRate();
-            $item->setPrice($this->cropFloat(strval($price)));
+        if ($collectionArray) {
+            /** @var ExchangeCurrencyRateInterface $rateData */
+            $rateData = $this->exchangeCurrencyRateRepository->getExchangeRateByCurrency($currency);
+
+            /** @var CryptoPriceInterface $item */
+            foreach ($collectionArray as $item) {
+                $this->currencyData->preparePrice($item, $rateData);
+            }
         }
 
-        return $collection;
+        return $collectionArray;
     }
-
-    private function cropFloat(string $number, $decimals = 2): float
-    {
-        return floatval(bcdiv($number, '1', $decimals));
-    }
-
 }

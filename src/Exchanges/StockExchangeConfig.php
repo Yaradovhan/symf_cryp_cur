@@ -6,14 +6,13 @@ namespace App\Exchanges;
 readonly class StockExchangeConfig
 {
     public function __construct(
-        private string $apiKlinesUrl,
-        private array  $symbols,
-        private string $pairCode,
-        private string $interval,
+        private string $apiKlinesUrl = '',
+        private array  $symbols = [],
+        private string $pairCode = '',
+        private string $interval = '',
         private int    $limit,
         private array  $mapping = ['time' => 0, 'close_price' => 4]
-    ) {
-    }
+    ) {}
 
     public function getKlinesUrl(): string
     {
@@ -44,5 +43,4 @@ readonly class StockExchangeConfig
     {
         return $this->mapping;
     }
-
 }
