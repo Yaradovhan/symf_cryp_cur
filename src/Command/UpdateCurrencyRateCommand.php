@@ -38,7 +38,7 @@ class UpdateCurrencyRateCommand extends Command
             return Command::SUCCESS;
         } catch (Throwable $ex) {
             $output->writeln($ex->getMessage());
-            $this->logger->error($ex->getMessage());
+            $this->logger->error($ex->getMessage(), ['exception' => $ex, 'trace' => $ex->getTraceAsString()]);
 
             return Command::FAILURE;
         }

@@ -3,9 +3,9 @@ declare(strict_types=1);
 
 namespace App\Repository;
 
-use App\Currency\CurrencyRateData;
 use App\Document\CryptoPrice;
 use App\Document\CryptoPrice\CryptoPriceInterface;
+use App\Processors\ResultProcessorInterface;
 use App\Repository\Interface\CryptoPriceRepositoryInterface;
 use Doctrine\Bundle\MongoDBBundle\ManagerRegistry;
 use Doctrine\ODM\MongoDB\DocumentManager;
@@ -17,10 +17,9 @@ class CryptoPriceRepository extends BaseDocumentRepository implements CryptoPric
     protected $documentName = CryptoPrice::class;
 
     public function __construct(
-        ManagerRegistry                                 $managerRegistry,
-        DocumentManager                                 $documentManager,
-        private readonly ExchangeCurrencyRateRepository $exchangeCurrencyRateRepository,
-        private readonly CurrencyRateData               $currencyData
+        ManagerRegistry        $managerRegistry,
+        DocumentManager        $documentManager,
+        private readonly array $processors
     ) {
         parent::__construct($managerRegistry, $documentManager);
     }
@@ -37,14 +36,11 @@ class CryptoPriceRepository extends BaseDocumentRepository implements CryptoPric
         $collectionArray = $this->findBy(['symbol' => strtoupper($symbol)], ['time' => 'DESC'], $itemsPerPage, $offset);
 
         if ($collectionArray) {
-            $rateData = $this->exchangeCurrencyRateRepository->getExchangeRateByCurrency($currency);
-
-            if ($rateData) {
-                /** @var CryptoPriceInterface $item */
-                foreach ($collectionArray as $item) {
-                    $this->currencyData->preparePrice($item, $rateData);
+            /** @var CryptoPriceInterface $item */
+                foreach ($this->processors as $processor) {
+                    /** @var ResultProcessorInterface $processor */
+                    $collectionArray = $processor->process($collectionArray, ['currency' => $currency]);
                 }
-            }
         }
 
         return $collectionArray;

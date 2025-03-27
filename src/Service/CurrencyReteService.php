@@ -78,4 +78,9 @@ readonly class CurrencyReteService implements CurrencyReteServiceInterface
 
         return $row;
     }
+
+    public function cropFloat(float $number, ?int $decimals = 2): float
+    {
+        return floatval(bcdiv((string)$number, '1', $decimals));
+    }
 }
