@@ -4,8 +4,6 @@ declare(strict_types=1);
 namespace App\Currency;
 
 use ApiPlatform\Metadata\HttpOperation;
-use App\Document\CryptoPrice\CryptoPriceInterface;
-use App\Document\ExchangeCurrencyRate\ExchangeCurrencyRateInterface;
 use Exception;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
@@ -68,17 +66,6 @@ readonly class CurrencyRateData
     public function getEnabledCurrencies(): array
     {
         return $this->enabledCurrencies;
-    }
-
-    public function preparePrice(CryptoPriceInterface $item, ExchangeCurrencyRateInterface $rateData): void
-    {
-        $price = $item->getPrice() * $rateData->getRate();
-        $item->setPrice($this->cropFloat(strval($price)));
-    }
-
-    private function cropFloat(string $number, ?int $decimals = 2): float
-    {
-        return floatval(bcdiv($number, '1', $decimals));
     }
 
     public function getBaseCurrencyCode(): string

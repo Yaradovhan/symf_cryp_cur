@@ -39,7 +39,7 @@ services:
         public: true
         autowire: true
         arguments:
-            - 'https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/%1.json'
+            - 'https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currncies/%1.json'
             - '@Symfony\Contracts\HttpClient\HttpClientInterface'
             - ['usd', 'eur', 'czk', 'uah']
 
@@ -51,10 +51,16 @@ services:
 
     App\Service\CryptoPriceService:
         public: true
-        autowire: true,
+        autowire: true
         arguments:
             - '@Symfony\Contracts\HttpClient\HttpClientInterface'
             - '@Doctrine\ODM\MongoDB\DocumentManager'
             - '@App\Exchanges\StockExchangeConfig'
             - '@App\Repository\CryptoPriceRepository'
             - '@App\Factory\CryptoPriceFactory'
+
+    App\Repository\CryptoPriceRepository:
+        public: true
+        autowire: true
+        arguments:
+            $processors: ['@App\Processors\PreparePriceProcessor']

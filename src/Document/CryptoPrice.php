@@ -8,9 +8,11 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use App\Document\CryptoPrice\CryptoPriceInterface;
 use App\State\CryptoPriceProvider;
+use App\Validator\Constraints\CryptoCoin;
 use DateTime;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Symfony\Component\Serializer\Attribute\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ApiResource(
     operations: [
@@ -38,6 +40,8 @@ class CryptoPrice implements CryptoPriceInterface
     private ?string $id = null;
 
     #[Groups(['crypto_price:item', 'crypto_price:list'])]
+    #[Assert\NotBlank]
+    #[CryptoCoin]
     #[ODM\Field(type: 'string')]
     private string $symbol;
 
